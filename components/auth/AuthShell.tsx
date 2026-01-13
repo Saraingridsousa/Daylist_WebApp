@@ -11,6 +11,7 @@ type AuthShellProps = {
   imageSrc?: string;
   imageAlt?: string;
   classname?: string;
+  styleImage?: string;
 };
 
 export default function AuthShell({
@@ -21,6 +22,7 @@ export default function AuthShell({
   imageSrc = '',
   imageAlt = 'Daylist Logo',
   classname = '',
+  styleImage = '',
 }: AuthShellProps) {
   return (
     <div className="bg-[radial-gradient(circle,#FFC0A1_13%,#FFC9D7_55%,#FED9FA_100%)] min-h-screen flex items-center justify-center p-4">
@@ -31,7 +33,7 @@ export default function AuthShell({
             src={imageSrc}
             width={150}
             height={150}
-            className="absolute -top-24 left-1/2 -translate-x-1/2 z-0"
+            className={`absolute -top-24 left-1/2 -translate-x-1/2 z-0 ${styleImage}`}
           />
         )}
         <div className="relative z-10 bg-white h-full rounded-lg shadow-lg p-8 pt-10 w-full">
