@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Sriracha } from "next/font/google";
 import "./globals.css";
+import "react-datepicker/dist/react-datepicker.css";
 
 const sriracha = Sriracha({ 
   weight: '400',
