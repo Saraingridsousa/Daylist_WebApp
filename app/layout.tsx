@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Sriracha } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const sriracha = Sriracha({ 
+  weight: '400',
+  subsets: ["latin"] 
+});
 
 export const metadata: Metadata = {
   title: "Daylist WebApp",
@@ -16,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>{children}</body>
+      <body className={sriracha.className}>{children}</body>
     </html>
   );
 }
