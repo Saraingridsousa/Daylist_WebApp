@@ -44,7 +44,7 @@ export function StatsDashboard() {
             <label className="block text-[#4874b1] font-semibold mb-2">Período:</label>
             <div className="relative">
               <select className="appearance-none bg-white rounded-xl border border-[#c9d6f3] py-3 pl-5 pr-11 text-[#4874b1] font-medium shadow-[0_10px_30px_-20px_rgba(72,116,177,0.7)] focus:outline-none">
-                <option>Últimas 4 semanas</option>
+                <option>Últimas semanas</option>
               </select>
               <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[#4874b1]">▾</span>
             </div>
