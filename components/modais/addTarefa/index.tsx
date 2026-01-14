@@ -59,7 +59,7 @@ export default function ModalAddTarefa() {
             </div>
 
             {/* Descrição */}
-            <div className="flex flex-row mt-7 justify-center items-center gap-2 pb-10">
+            <div className="flex flex-row mt-7 justify-center items-start gap-2 pb-10">
                 <Pencil className="text-black w-10 mb-1"/>
                 <textarea
                     className="w-full bg-white opacity-60 px-4 py-2 pb-10 border border-[#7966b2] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5438a6] focus:border-transparent transition text-gray-900 cursor-pointer"
