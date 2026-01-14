@@ -25,7 +25,7 @@ export function StatsDashboard() {
 
       <div className="bg-[#fbd4fb] px-8 pb-12 pt-14">
         <h1 className="text-center text-4xl font-bold text-[#4874b1] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)]">
-          Suas Estatísticas de Hábitos
+          Suas Estatísticas de Hábito
         </h1>
 
         <div className="mt-10 flex flex-wrap items-end justify-center gap-8">
