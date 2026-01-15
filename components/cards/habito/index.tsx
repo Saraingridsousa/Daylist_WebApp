@@ -16,7 +16,7 @@ const sriracha = Sriracha({
 
 export default function CardHabito({ title, progress, color, onEdit, onDelete }: CardHabitoProps) {
     return (
-        <div className={`w-72 ${color} bg-opacity-60 rounded-lg shadow-md p-4 flex flex-col justify-between hover:shadow-xl transition cursor-pointer ${sriracha.className}`}>
+        <div className={`w-44 md:w-64 ${color} bg-opacity-60 rounded-lg shadow-md p-4 flex flex-col justify-between hover:shadow-xl transition cursor-pointer ${sriracha.className}`}>
             {/* Título do Hábito */}
             <div className="flex flex-row justify-between items-center gap-10">
                 <h3 className={`text-lg text-gray-900`}>{title}</h3>

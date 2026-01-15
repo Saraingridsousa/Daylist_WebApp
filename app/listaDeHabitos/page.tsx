@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import CardHabito from "@/components/cards/habito";
+import CarrosselDeHabitos from "@/components/carrosselDeHabitos";
 import ModalAddHabito from "@/components/modais/addHabito";
 import ModalEditarHabito from "@/components/modais/editarHabito";
 import ModalExcluirHabito from "@/components/modais/excluirHabito";
@@ -17,8 +18,8 @@ export default function ListaDeHabitos({ progress }: ListaDeHabitosProps) {
     const [isExcluirHabitoOpen, setIsExcluirHabitoOpen] = useState(false);
 
     return (
-        <main className="w-full bg-[radial-gradient(circle,#FFC0A1_13%,#FFC9D7_55%,#FED9FA_100%)] flex min-h-screen flex-col items-center justify-center px-16 py-10 relative">
-            <div className="bg-white rounded-lg w-full max-w-5xl p-8 pb-20 flex flex-col gap-3 items-center shadow-lg text-gray-900">
+        <main className="w-full bg-[radial-gradient(circle,#FFC0A1_13%,#FFC9D7_55%,#FED9FA_100%)] flex min-h-screen flex-col items-center justify-center sm:px-16 sm:py-10 relative">
+            <div className="bg-white rounded-lg w-full sm:max-w-6xl p-4 sm:p-8 pb-20 flex flex-col gap-3 items-center shadow-lg text-gray-900">
                 <h1 className="text-3xl">Lista de Hábitos</h1>
                 
                 <button
@@ -35,7 +36,7 @@ export default function ListaDeHabitos({ progress }: ListaDeHabitosProps) {
                         <Clock className="inline-block mr-2 w-5" />
                         <span>Tarefas Recentes:</span>
                     </div>
-                    <div className="flex flex-row gap-6 justify-around px-10">
+                    <CarrosselDeHabitos>
                         <CardHabito
                             title="Meditar"
                             progress={40}
@@ -57,7 +58,7 @@ export default function ListaDeHabitos({ progress }: ListaDeHabitosProps) {
                             onEdit={() => setIsEditarHabitoOpen(true)}
                             onDelete={() => setIsExcluirHabitoOpen(true)}
                         />
-                    </div>
+                    </CarrosselDeHabitos>
                 </div>
 
                 {/* Tarefas Concluidas */}
@@ -66,7 +67,7 @@ export default function ListaDeHabitos({ progress }: ListaDeHabitosProps) {
                         <Check className="inline-block mr-2 w-5" />
                         <span>Tarefas Concluidas:</span>
                     </div>
-                    <div className="flex flex-row gap-6 justify-around px-10">
+                    <CarrosselDeHabitos>
                         <CardHabito
                             title="Meditar"
                             progress={100}
@@ -88,7 +89,28 @@ export default function ListaDeHabitos({ progress }: ListaDeHabitosProps) {
                             onEdit={() => setIsEditarHabitoOpen(true)}
                             onDelete={() => setIsExcluirHabitoOpen(true)}
                         />
-                    </div>
+                        <CardHabito
+                            title="Exercitar"
+                            progress={100}
+                            color="bg-[#FC809F]/30"
+                            onEdit={() => setIsEditarHabitoOpen(true)}
+                            onDelete={() => setIsExcluirHabitoOpen(true)}
+                        />
+                        <CardHabito
+                            title="Exercitar"
+                            progress={100}
+                            color="bg-[#FC809F]/30"
+                            onEdit={() => setIsEditarHabitoOpen(true)}
+                            onDelete={() => setIsExcluirHabitoOpen(true)}
+                        />
+                        <CardHabito
+                            title="Exercitar"
+                            progress={100}
+                            color="bg-[#FC809F]/30"
+                            onEdit={() => setIsEditarHabitoOpen(true)}
+                            onDelete={() => setIsExcluirHabitoOpen(true)}
+                        />
+                    </CarrosselDeHabitos>
                 </div>
                 
             </div>
