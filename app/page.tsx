@@ -7,8 +7,6 @@ export default function Home() {
       <div className="z-10 max-w-5xl w-full items-center justify-center font-mono text-sm">
         
       </div>
-      <CardHabito title="Exercícios Diários" progress={75} />
-        <CardHabito title="Beber Água" progress={100} />
     </main>
   );
 }

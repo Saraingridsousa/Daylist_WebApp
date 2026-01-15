@@ -1,17 +1,26 @@
+"use client";
+
+import { useState } from "react";
 import CardHabito from "@/components/cards/habito";
-import { Check, Clock, Plus } from "lucide-react";
+import ModalAddHabito from "@/components/modais/addHabito";
+import { Check, Clock, Plus, X } from "lucide-react";
 
 interface ListaDeHabitosProps {
     progress?: number;
 }
 
-export default function ListaDeHabitos( {progress}: ListaDeHabitosProps) {
+export default function ListaDeHabitos({ progress }: ListaDeHabitosProps) {
+    const [isAddHabitoOpen, setIsAddHabitoOpen] = useState(false);
+
     return (
-        <main className="w-full bg-[radial-gradient(circle,#FFC0A1_13%,#FFC9D7_55%,#FED9FA_100%)] flex min-h-screen flex-col items-center justify-center px-16 py-10">
+        <main className="w-full bg-[radial-gradient(circle,#FFC0A1_13%,#FFC9D7_55%,#FED9FA_100%)] flex min-h-screen flex-col items-center justify-center px-16 py-10 relative">
             <div className="bg-white rounded-lg w-full max-w-5xl p-8 pb-20 flex flex-col gap-3 items-center shadow-lg text-gray-900">
                 <h1 className="text-3xl">Lista de Hábitos</h1>
                 
-                <button className="bg-[#FC809F]/20 rounded-full border-2 border-dashed border-pink-400 px-3 py-1 hover:bg-[#FC809F]/30 transition-colors cursor-pointer">
+                <button
+                    className="bg-[#FC809F]/20 rounded-full border-2 border-dashed border-pink-400 px-3 py-1 hover:bg-[#FC809F]/30 transition-colors cursor-pointer"
+                    onClick={() => setIsAddHabitoOpen(true)}
+                >
                     <Plus className="inline-block mr-2 w-5" />
                     Adicionar Hábito
                 </button>
@@ -43,6 +52,22 @@ export default function ListaDeHabitos( {progress}: ListaDeHabitosProps) {
                 </div>
                 
             </div>
+
+            {isAddHabitoOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="relative">
+                        <button
+                            type="button"
+                            aria-label="Fechar modal"
+                            className="absolute -top-3 -right-3 bg-white rounded-full p-1 shadow-md text-gray-700 hover:bg-gray-100"
+                            onClick={() => setIsAddHabitoOpen(false)}
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                        <ModalAddHabito />
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
