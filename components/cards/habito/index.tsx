@@ -1,23 +1,34 @@
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import { Sriracha } from "next/font/google";
-interface CardHabitoProps{
+
+interface CardHabitoProps {
     title: string;
     progress: number; // valor entre 0 e 100
     color?: string;
+    onEdit?: () => void;
+    onDelete?: () => void;
 }
+
 const sriracha = Sriracha({ 
-  weight: '400',
-  subsets: ["latin"] 
+    weight: '400',
+    subsets: ["latin"] 
 });
-export default function CardHabito({ title, progress, color }: CardHabitoProps) {
+
+export default function CardHabito({ title, progress, color, onEdit, onDelete }: CardHabitoProps) {
     return (
         <div className={`w-72 ${color} bg-opacity-60 rounded-lg shadow-md p-4 flex flex-col justify-between hover:shadow-xl transition cursor-pointer ${sriracha.className}`}>
             {/* Título do Hábito */}
             <div className="flex flex-row justify-between items-center gap-10">
                 <h3 className={`text-lg text-gray-900`}>{title}</h3>
                 <div className="flex flex-row gap-1">
-                    <Pencil className="w-4 text-gray-600 cursor-pointer hover:text-gray-800" />
-                    <Trash2 className="w-4 text-gray-600 cursor-pointer hover:text-gray-800" />
+                    <Pencil
+                        className="w-4 text-gray-600 cursor-pointer hover:text-gray-800"
+                        onClick={onEdit}
+                    />
+                    <Trash2
+                        className="w-4 text-gray-600 cursor-pointer hover:text-gray-800"
+                        onClick={onDelete}
+                    />
                 </div>
             </div>
             {/* Progresso do Hábito */}

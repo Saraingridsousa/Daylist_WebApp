@@ -73,10 +73,7 @@ export default function ModalEditarHabito() {
             </div>
 
             {/* Botões */}
-            <div className="pt-7 justify-end flex gap-4">
-                <button>
-                    <span className="bg-[#FC809F] text-white px-4 py-2 rounded-lg hover:bg-[#ede7b7] hover:text-[#FC809F] transition">Cancelar</span>
-                </button>   
+            <div className="pt-7 justify-end flex">
                 <button>
                     <span className="bg-[#FC809F] text-white px-4 py-2 rounded-lg hover:bg-[#ede7b7] hover:text-[#FC809F] transition">Editar Hábito</span>
                 </button>
