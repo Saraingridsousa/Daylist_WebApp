@@ -26,6 +26,12 @@ export default function Calendar() {
     const [editandoAno, setEditandoAno] = useState(false);
     const [anoInput, setAnoInput] = useState('');
 
+    const habitosDoDia = [ //Exemplo
+        { titulo: '💧 Beber Água', meta: 3, unidade: 'litros', progresso: 3, cor: '#fae298' },
+        { titulo: '📚 Estudar', meta: 3, unidade: 'horas', progresso: 2, cor: '#e7b6e7' },
+        { titulo: '🏋️ Exercício', meta: 2, unidade: 'horas', progresso: 0.5, cor:  '#86e5d6' }
+    ];
+
     useEffect(() => {
         function handleClickFora(event: MouseEvent) {
             if (refMenuVisao.current && !refMenuVisao.current.contains(event.target as Node)) setMenuVisaoAberto(false);
@@ -270,10 +276,33 @@ export default function Calendar() {
 
                     {/* Semana */}
                     {visao === 'Semana' && construirGradeSemana().map((dia, i) => (
-                        <div key={i} className="border-r border-gray-100 last:border-r-0 p-6 flex flex-col items-center group hover:bg-pink-50/20 transition">
-                            <span className={`text-3xl font-bold ${dia.toDateString() === new Date().toDateString() ? 'text-pink-400' : 'text-gray-800'}`}>
+                        <div key={i} className="border-r border-gray-100 last:border-r-0 p-3 flex flex-col items-center group hover:bg-pink-500/10 transition">
+                            <span className={`text-3xl font-bold mb-4 mt-2 ${dia.toDateString() === hoje.toDateString() ? 'text-pink-500' : 'text-gray-800'}`}>
                                 {dia.getDate()}
                             </span>
+
+                            <div className="flex flex-col gap-3 w-full">
+                                {habitosDoDia.map((habito, idx) => (
+                                    <div 
+                                        key={idx} 
+                                        className="relative overflow-hidden rounded-xl p-[6px] text-[13px] text-black"
+                                        style={{ backgroundColor: `${dia.getDate() > hoje.getDate() ? '#bdbdbd' : habito.cor}50` }}
+                                    >
+                                        <div 
+                                            className="absolute inset-y-0 left-0"
+                                            style={{ 
+                                                width: `${dia.getDate() > hoje.getDate() ? '0' : (habito.progresso / habito.meta) * 100}%`, 
+                                                backgroundColor: habito.cor,
+                                                zIndex: 0 
+                                            }}
+                                        />                                        
+                                        <div className="relative z-10 flex flex-col gap-1">
+                                            <span> {habito.titulo} </span>
+                                            <span> {(habito.progresso / habito.meta) >= 1 ? '✅ Concluído' : `🎯 Meta: ${habito.meta}`} </span> 
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     ))}
                 </div>
