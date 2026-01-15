@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 
 export default function Calendar() {
-    const [visao, setVisao] = useState<'Semana' | 'Mês' | 'Ano'>('Semana');
+    const [visao, setVisao] = useState<'Semana' | 'Mês' | 'Ano'>('Mês');
     const [menuVisaoAberto, setMenuVisaoAberto] = useState(false);
     const [menuMesesAberto, setMenuMesesAberto] = useState(false);
     const [dataReferencia, setDataReferencia] = useState(new Date());
@@ -195,7 +195,7 @@ export default function Calendar() {
                             className="hover:scale-110 transition-transform duration-200 focus:outline-none"
                         >
                             <Image 
-                                src="/assets/images/capivara_calendario.png"
+                                src="/assets/capivara_calendario.png"
                                 alt="Hoje"
                                 width={55}
                                 height={55}
@@ -213,19 +213,19 @@ export default function Calendar() {
                             </button>
 
                             {menuVisaoAberto && (
-                                <div className="absolute top-14 left-0 w-48 bg-[#f9f0f6] rounded-2xl shadow-xl z-50 p-2 border border-pink-100">
+                                <div className="absolute top-14 left-0 w-48 bg-[#fff3f6] rounded-2xl shadow-xl z-50 p-2 border border-pink-100">
                                     {['Semana', 'Mês', 'Ano'].map((opcao) => (
                                         <button
                                             key={opcao}
                                             onClick={() => { setVisao(opcao as any); setMenuVisaoAberto(false); }}
-                                            className="w-full text-left px-5 py-3 rounded-xl hover:bg-white transition flex justify-between items-center text-xl font-[family-name:var(--font-sriracha)]"
+                                            className="w-full text-left px-5 py-3 rounded-xl hover:bg-[#ffe6ec] transition flex justify-between items-center text-xl font-[family-name:var(--font-sriracha)]"
                                         >
-                                            {opcao} {visao === opcao && <span className="text-pink-400 text-sm">✓</span>}
+                                            {opcao} {visao === opcao && <span className="text-[#fc809f] text-sm">✓</span>}
                                         </button>
                                     ))}
                                 </div>
                             )}
-                            <button className="bg-[#ff8da1] font-[family-name:var(--font-sriracha)] text-white px-6 py-2 rounded-full font-medium text-xl hover:bg-pink-400 transition shadow-sm">
+                            <button className="bg-[#ff9cb5] font-[family-name:var(--font-sriracha)] text-white px-6 py-2 rounded-full font-medium text-xl hover:bg-[#fc809f] transition shadow-sm">
                                 Criar +
                             </button>
                         </div>
