@@ -25,3 +25,10 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Título com contorno azul e preenchimento branco (página de histórico) */
+.title-outline {
+  color: #ffffff;
+  -webkit-text-stroke-width: 3px;
+  -webkit-text-stroke-color: #789ccb;
+}

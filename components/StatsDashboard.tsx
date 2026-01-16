@@ -71,7 +71,7 @@ export function StatsDashboard() {
               <p className="text-[#7d7d7d]">Meta: 35 vezes</p>
               <div className="mt-6">
                 <Image
-                  src="/capi.svg"
+                  src="/capii.png"
                   alt="Ilustração de uma capivara estudando"
                   width={120}
                   height={120}
