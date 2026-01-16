@@ -253,11 +253,21 @@ export default function Calendar() {
                     {visao === 'Mês' && construirGradeMes().map((item, index) => {
                         const ehHoje = item.dataFull.toDateString() === hoje.toDateString();
                         return (
-                            <div key={index} className={`h-24 md:h-32 border-r border-b border-gray-100 p-4 transition cursor-pointer ${ehHoje ? 'bg-pink-50/50' : 'hover:bg-pink-50'}`}>
+                            <div key={index} className={`h-24 md:h-32 border-r border-b border-gray-100 p-4 transition cursor-pointer ${ehHoje ? 'bg-pink-50/50 hover:bg-pink-50/80' : 'hover:bg-pink-50/50'}`}>
                                 <span className={`flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium 
                                     ${!item.atual ? 'text-gray-300' : ehHoje ? 'bg-pink-400 text-white' : 'text-gray-600'}`}>
                                     {item.dia}
                                 </span>
+                                <div className="mt-1 flex flex-col gap-1">
+                                {habitosDoDia.map((habito, idx) => (
+                                    <div 
+                                    key={idx}
+                                    className={`h-2 rounded-full`}
+                                    style={{ backgroundColor: ehHoje ? `${habito.cor}` : `${habito.cor}60`,
+                                    width: item.dataFull > hoje ? '0.5rem' : `${(habito.progresso / habito.meta) * 100}%` }}
+                                    ></div>
+                                ))}
+                                </div>
                             </div>
                         );
                     })}
