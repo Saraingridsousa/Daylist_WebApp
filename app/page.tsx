@@ -1,5 +1,6 @@
 import Header from "./components/Header";
 import Hero from "./components/Hero";
+import HeroFeatures from "./components/HeroFeatures";
 import SyncSection from "./components/SyncSection";
 import CTASection from "./components/CTASection";
 
@@ -9,7 +10,8 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
-        <SyncSection />
+        <HeroFeatures />
+        {/* <SyncSection /> */}
         <CTASection />
       </main>
     </>

@@ -1,75 +1,45 @@
 export default function Hero() {
   return (
-    <section className="relative min-h-screen bg-gradient-to-b from-blue-200 via-pink-200 to-pink-300 pt-24 pb-16 overflow-hidden">
-      {/* Capivaras decorativas */}
-      <div className="absolute top-40 left-10 text-6xl animate-bounce">
-        🦫
-      </div>
-      <div className="absolute top-32 left-1/4 text-5xl animate-pulse">
-        🦫
-      </div>
-      <div className="absolute top-36 right-1/4 text-5xl animate-bounce delay-100">
-        🦫
-      </div>
-      <div className="absolute top-40 right-10 text-6xl animate-pulse delay-200">
-        🦫
-      </div>
-
-      <div className="container mx-auto px-6 text-center relative z-10">
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
-          Tire seus objetivos
-          <br />
-          do papel
+    <section className="relative w-full min-h-[420px] md:min-h-[520px] flex flex-col items-center justify-start pt-0 pb-0 bg-[#E6F0FB] overflow-hidden">
+      {/* Título e subtítulo centralizados */}
+      <div className="relative z-20 flex flex-col items-center justify-center mt-14 md:mt-20">
+        <h1
+          className="text-[2.5rem] md:text-[3.5rem] font-extrabold mb-2 tracking-wide"
+          style={{
+            color: '#fff',
+            letterSpacing: '0.04em',
+            fontFamily: 'Quicksand, Arial, sans-serif',
+            WebkitTextStroke: '2px #BFD6F6',
+            textShadow: '0 2px 0 #BFD6F6, 0 4px 12px #BFD6F6',
+          }}
+        >
+          Tire seus<br className="block md:hidden" /> objetivos do papel
         </h1>
-        <p className="text-xl md:text-2xl text-blue-900 mb-12 max-w-2xl mx-auto">
+        <p
+          className="text-base md:text-xl mb-2 max-w-2xl mx-auto font-medium"
+          style={{
+            color: '#7CA3D6',
+            fontFamily: 'Quicksand, Arial, sans-serif',
+          }}
+        >
           Coloque na lista e dê um check na vida, um dia de cada vez.
         </p>
+      </div>
 
-        {/* Grid de Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
-          <FeatureCard
-            title="Gestão de Hábitos"
-            description="Acompanhe hábitos diários com facilidade. Visualize seu progresso e celebre suas conquistas com um sistema de ofensivas e lembretes inteligentes."
-          />
-          <FeatureCard
-            title="Agenda Inteligente"
-            description="Organize suas tarefas de forma eficiente. O Daylist organiza automaticamente suas prioridades e sugere os melhores horários para executá-las."
-          />
-          <FeatureCard
-            title="Insights com IA"
-            description="Receba análises personalizadas sobre sua produtividade. Aprenda com seus padrões e melhore continuamente com recomendações inteligentes."
-          />
-          <FeatureCard
-            title="Monitoramento Visual"
-            description="Acompanhe visualmente seu progresso diário. Gráficos e estatísticas que tornam suas conquistas mais tangíveis e motivadoras."
-          />
-          <FeatureCard
-            title="Sistema de Ofensiva"
-            description="Mantenha a consistência e construa sequências de dias produtivos. Quanto maior sua ofensiva, maior sua motivação para continuar."
-          />
-          <FeatureCard
-            title="Interface Zen"
-            description="Design limpo e minimalista que não distrai. Foque no que importa com uma interface intuitiva e agradável aos olhos."
-          />
-        </div>
-
-        {/* CTA com Capivara */}
-        <div className="flex items-center justify-center gap-4">
-          <div className="text-7xl">🦫</div>
-          <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-blue-50 transition-all hover:scale-105 shadow-lg">
-            ENTRE OU REGISTRE-SE
-          </button>
+      {/* Capivaras centralizadas sobre os arcos e linhas atrás */}
+      <div className="relative flex flex-col items-center z-10 mt-8" style={{height: '180px'}}>
+        <svg className="absolute top-0 left-0 w-full h-[140px] z-0" viewBox="0 0 1440 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,40 Q720,-20 1440,40" stroke="#BFD6F6" strokeWidth="4" fill="none" />
+          <path d="M0,80 Q720,20 1440,80" stroke="#E6B6E6" strokeWidth="4" fill="none" />
+          <path d="M0,120 Q720,60 1440,120" stroke="#FDE6F6" strokeWidth="4" fill="none" />
+        </svg>
+        <div className="flex flex-row gap-10 md:gap-20 items-end relative z-10 mt-6">
+          <img src="/Card - Dormindo.svg" alt="Capivara Dormindo" className="w-32 h-32 md:w-40 md:h-40" />
+          <img src="/Card - Bebendo água.svg" alt="Capivara Bebendo Água" className="w-32 h-32 md:w-40 md:h-40" />
+          <img src="/Card - Exercício.svg" alt="Capivara Exercício" className="w-32 h-32 md:w-40 md:h-40" />
+          <img src="/Card - Estudando.svg" alt="Capivara Estudando" className="w-32 h-32 md:w-40 md:h-40" />
         </div>
       </div>
     </section>
-  );
-}
-
-function FeatureCard({ title, description }: { title: string; description: string }) {
-  return (
-    <div className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-xl transition-shadow">
-      <h3 className="text-lg font-bold text-gray-800 mb-3">{title}</h3>
-      <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
-    </div>
   );
 }
