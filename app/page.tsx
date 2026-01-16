@@ -1,9 +1,19 @@
-import { StatsDashboard } from "../components/StatsDashboard";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import HeroFeatures from "./components/HeroFeatures";
+import SyncSection from "./components/SyncSection";
+import CTASection from "./components/CTASection";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#f9c7fa] flex items-center justify-center py-12 px-4">
-      <StatsDashboard />
-    </main>
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <HeroFeatures />
+        {/* <SyncSection /> */}
+        <CTASection />
+      </main>
+    </>
   );
 }
