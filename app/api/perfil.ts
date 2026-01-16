@@ -11,7 +11,7 @@ export interface ResumoSaude {
 export const perfilApi = {
     obterPerfil: (usuarioId: number) => 
         api.get<ResumoSaude>(`/perfil/${usuarioId}`),
-    atualizarBiometria: (dados: { usuarioId: number; peso: number; altura: number }) => 
+    atualizarBiometria: (dados: { usuarioId: number; peso: number; altura: number, dataNascimento: string, sexo: string }) => 
         api.put<{ message: string }>('/perfil/biometria', dados),
     checarOfensiva: (usuarioId: number) => 
         api.post<{ message: string }>('/perfil/verificar-ofensiva', { usuarioId })
