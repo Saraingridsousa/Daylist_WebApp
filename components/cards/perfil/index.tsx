@@ -50,7 +50,7 @@ export default function PerfilCard({idade, genero, peso, altura, dias, progress}
             <span>Dias</span>
         </div>
     </div>
-    <div className="flex flex-col w-full mt-10 pl-7 justify-around text-gray-900">
+    {/* <div className="flex flex-col w-full mt-10 pl-7 justify-around text-gray-900">
           <h2>Progresso Semanal:</h2>
           <div className="flex w-full flex-row gap-4 items-center">
             
@@ -60,7 +60,7 @@ export default function PerfilCard({idade, genero, peso, altura, dias, progress}
 
             <span>{progress}% da meta semanal concluída!</span>
           </div>
-    </div>
+    </div> */}
    </div>
   );
 }
