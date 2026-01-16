@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
+import { usuarioApi } from '../api/usuario';
 import AuthShell from '../../components/auth/AuthShell';
 
 export default function SignupPage() {
@@ -29,8 +30,9 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      router.push('/login');
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+      await usuarioApi.registrar({ name, email, senha: password });
+      router.push('/dados-pessoais');
     } catch (err) {
       setError('Erro ao criar conta. Tente novamente.');
       console.error('Signup error:', err);

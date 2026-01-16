@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
+import { usuarioApi } from '../api/usuario';
 import AuthShell from '../../components/auth/AuthShell';
 
 
@@ -21,9 +22,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {      
-      // Simulação de delay de requisição
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await usuarioApi.login({ email, senha: password });
       // Depois de logar, redirecione para a página principal
       router.push('/');
     } catch (err) {
