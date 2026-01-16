@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { habitoApi } from "@/api/habito";
-import { Habito, FrequenciaEnum } from "@/api/types";
+import { registroHabitoApi } from "@/api/registroHabito";
+import { Habito, FrequenciaEnum, RegistroHabito } from "@/api/types";
 
 export default function TestApiHabito() {
   const [perfilId, setPerfilId] = useState("1");
   const [habitos, setHabitos] = useState<Habito[]>([]);
+  const [registrosHoje, setRegistrosHoje] = useState<RegistroHabito[]>([]);
+  const [loading, setLoading] = useState(false);
+
   const [novoHabito, setNovoHabito] = useState({
     nome: "",
     categoria: "Saúde",
@@ -16,119 +20,123 @@ export default function TestApiHabito() {
     motivacao: ""
   });
 
-  const buscarHabitos = async () => {
+  // Função para buscar hábitos e o progresso de hoje simultaneamente
+  const buscarDadosCompletos = async () => {
+    setLoading(true);
     try {
-      const res = await habitoApi.listarPorPerfil(parseInt(perfilId));
-      setHabitos(res.data);
+      const dataHoje = new Date().toISOString().split('T')[0];
+      
+      // Executa as duas chamadas em paralelo
+      const [resHabitos, resRegistros] = await Promise.all([
+        habitoApi.listarPorPerfil(parseInt(perfilId)),
+        registroHabitoApi.listarPorData(parseInt(perfilId), dataHoje)
+      ]);
+
+      setHabitos(resHabitos.data);
+      setRegistrosHoje(resRegistros.data);
     } catch (err) {
-      alert("Erro ao buscar hábitos");
+      console.error("Erro ao sincronizar dados", err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const criarHabito = async () => {
-    try {
-      await habitoApi.criar({ ...novoHabito, perfilId: parseInt(perfilId) });
-      alert("Hábito criado com sucesso!");
-      buscarHabitos();
-    } catch (err) {
-      alert("Erro ao criar hábito");
-    }
+  // Carregar ao iniciar
+  useEffect(() => {
+    buscarDadosCompletos();
+  }, []);
+
+  // Helper para encontrar o progresso de um hábito específico na lista de hoje
+  const obterProgresso = (habitoId: number) => {
+    const registro = registrosHoje.find(r => r.habito_id === habitoId);
+    return registro ? registro.qtdRealizada : 0;
+  };
+
+  const obterStatus = (habitoId: number) => {
+    const registro = registrosHoje.find(r => r.habito_id === habitoId);
+    return registro ? registro.status : "PENDENTE";
   };
 
   return (
-    <div className="p-6 border border-green-500/30 rounded-lg bg-gray-800 mt-10 w-full max-w-3xl text-white shadow-xl">
-      <h2 className="text-xl font-bold text-green-400 mb-6">Teste da API de Hábitos</h2>
-
-      {/* Formulário de Criação */}
-      <div className="grid grid-cols-2 gap-4 mb-8 bg-gray-900 p-6 rounded-lg border border-gray-700">
-        <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Nome do Hábito</label>
-            <input
-                placeholder="Ex: Beber Água"
-                className="w-full bg-gray-700 p-2 rounded border border-gray-600 outline-none focus:border-green-500"
-                onChange={(e) => setNovoHabito({...novoHabito, nome: e.target.value})}
-            />
-        </div>
-
-        <div>
-            <label className="text-xs text-gray-400 mb-1 block">Unidade de Medida</label>
-            <input
-                placeholder="Ex: Litros, Km, Minutos"
-                value={novoHabito.unidadeMedida}
-                className="w-full bg-gray-700 p-2 rounded border border-gray-600 outline-none focus:border-green-500"
-                onChange={(e) => setNovoHabito({...novoHabito, unidadeMedida: e.target.value})}
-            />
-        </div>
-
-        <div>
-            <label className="text-xs text-gray-400 mb-1 block">Meta Alvo</label>
-            <input
-                type="number"
-                placeholder="Ex: 2"
-                className="w-full bg-gray-700 p-2 rounded border border-gray-600 outline-none focus:border-green-500"
-                onChange={(e) => setNovoHabito({...novoHabito, metaAlvo: parseInt(e.target.value)})}
-            />
-        </div>
-
-        <div>
-            <label className="text-xs text-gray-400 mb-1 block">Frequência</label>
-            <select 
-                className="w-full bg-gray-700 p-2 rounded border border-gray-600 outline-none focus:border-green-500"
-                onChange={(e) => setNovoHabito({...novoHabito, frequencia: e.target.value as FrequenciaEnum})}
-            >
-                <option value={FrequenciaEnum.DIARIO}>Diário</option>
-                <option value={FrequenciaEnum.SEMANAL}>Semanal</option>
-            </select>
-        </div>
-
-        <div>
-            <label className="text-xs text-gray-400 mb-1 block">Categoria</label>
-            <input
-                placeholder="Ex: Saúde, Estudos"
-                className="w-full bg-gray-700 p-2 rounded border border-gray-600 outline-none focus:border-green-500"
-                onChange={(e) => setNovoHabito({...novoHabito, categoria: e.target.value})}
-            />
-        </div>
-
-        <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Motivação</label>
-            <textarea
-                placeholder="Por que você quer este hábito?"
-                className="w-full bg-gray-700 p-2 rounded border border-gray-600 outline-none focus:border-green-500"
-                onChange={(e) => setNovoHabito({...novoHabito, motivacao: e.target.value})}
-            />
-        </div>
-
-        <button onClick={criarHabito} className="bg-green-600 p-3 rounded font-bold col-span-2 hover:bg-green-700 transition-colors">
-          Criar Hábito
+    <div className="p-6 border border-green-500/30 rounded-lg bg-gray-800 mt-10 w-full max-w-3xl text-white shadow-xl font-sans">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-green-400">Gerenciar Hábitos e Progresso</h2>
+        <button 
+          onClick={buscarDadosCompletos}
+          className="bg-blue-600 hover:bg-blue-500 text-[10px] px-3 py-1 rounded font-bold uppercase"
+        >
+          {loading ? "Sincronizando..." : "Sincronizar Hoje"}
         </button>
       </div>
 
-      {/* Listagem com visualização da Unidade */}
+      {/* Formulário (Simplificado para o exemplo) */}
+      <div className="grid grid-cols-2 gap-3 mb-8 bg-gray-900 p-4 rounded-lg border border-gray-700">
+        <input
+          placeholder="Novo Hábito..."
+          className="col-span-2 bg-gray-700 p-2 rounded text-sm border border-gray-600"
+          onChange={(e) => setNovoHabito({...novoHabito, nome: e.target.value})}
+        />
+        <button 
+          onClick={async () => {
+             await habitoApi.criar({...novoHabito, perfilId: parseInt(perfilId)});
+             buscarDadosCompletos();
+          }}
+          className="col-span-2 bg-green-600 p-2 rounded font-bold text-sm hover:bg-green-700"
+        >
+          Salvar Hábito
+        </button>
+      </div>
+
+      {/* Listagem com Barra de Progresso Real */}
       <div className="space-y-4">
-        <h3 className="font-bold text-gray-300 flex items-center gap-2">
-            Hábitos Ativos 
-            <button onClick={buscarHabitos} className="text-[10px] bg-blue-600 px-2 py-1 rounded hover:bg-blue-500 uppercase">Sincronizar</button>
-        </h3>
-        
-        {habitos.map((h) => (
-          <div key={h.id} className="flex justify-between items-center bg-gray-700 p-4 rounded-lg border-l-4 border-green-500 shadow-md">
-            <div>
-              <p className="font-bold text-lg">{h.nome}</p>
-              <div className="flex gap-2 mt-1">
-                <span className="text-[10px] bg-gray-800 px-2 py-0.5 rounded text-green-400 uppercase font-semibold">
-                    {h.frequencia}
-                </span>
-                <span className="text-[10px] bg-gray-800 px-2 py-0.5 rounded text-blue-400 uppercase font-semibold">
-                    Meta: {h.metaAlvo} {h.unidadeMedida}
-                </span>
+        {habitos.map((h) => {
+          const progresso = obterProgresso(h.id);
+          const status = obterStatus(h.id);
+          const porcentagem = Math.min((progresso / h.metaAlvo) * 100, 100);
+
+          return (
+            <div key={h.id} className="bg-gray-900 p-4 rounded-lg border border-gray-700 shadow-inner">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h3 className="font-bold text-gray-100">{h.nome} - {h.id}</h3>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">{h.categoria} • {h.frequencia}</p>
+                </div>
+                <div className="text-right">
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                    status === 'CONCLUIDO' ? 'bg-green-900 text-green-300' : 
+                    status === 'PARCIAL' ? 'bg-yellow-900 text-yellow-300' : 'bg-gray-800 text-gray-500'
+                  }`}>
+                    {status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Barra de Progresso Visual */}
+              <div className="relative pt-1">
+                <div className="flex mb-2 items-center justify-between">
+                  <div>
+                    <span className="text-xs font-semibold inline-block text-green-400">
+                      {progresso} / {h.metaAlvo} <span className="text-[10px] text-gray-500">{h.unidadeMedida}</span>
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs font-semibold inline-block text-green-400">
+                      {Math.round(porcentagem)}%
+                    </span>
+                  </div>
+                </div>
+                <div className="overflow-hidden h-2 mb-2 text-xs flex rounded bg-gray-700">
+                  <div
+                    style={{ width: `${porcentagem}%` }}
+                    className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center transition-all duration-500 ${
+                        porcentagem === 100 ? 'bg-green-500' : 'bg-blue-500'
+                    }`}
+                  ></div>
+                </div>
               </div>
             </div>
-            <div className="text-right italic text-xs text-gray-400 max-w-[200px] truncate">
-                {h.motivacao}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
