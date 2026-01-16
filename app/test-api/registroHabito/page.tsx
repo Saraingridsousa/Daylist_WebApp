@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { registroHabitoApi } from "@/api/registroHabito";
-import { StatusHabitoEnum } from "@/api/types";
+import { registroHabitoApi } from "@/app/api/registroHabito";
+import { StatusHabitoEnum } from "@/app/api/types";
 
 export default function TestApiRegistro() {
   const [ids, setIds] = useState({ habitoId: "", usuarioId: "1", perfilId: "1" });

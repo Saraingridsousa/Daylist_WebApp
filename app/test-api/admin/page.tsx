@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { administradorApi } from "@/api/administrador";
+import { administradorApi } from "@/app/api/administrador";
 
 export default function TestApiAdmin() {
   const [adminData, setAdminData] = useState({ email: "", nome: "", usuarioId: "" });

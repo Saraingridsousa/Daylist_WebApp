@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { relatorioIAApi } from "@/api/relatorioIA";
-import { RelatorioIA } from "@/api/types";
+import { relatorioIAApi } from "@/app/api/relatorioIA";
+import { RelatorioIA } from "@/app/api/types";
 import Markdown from 'react-markdown'
 
 export default function TestApiRelatorioIA() {

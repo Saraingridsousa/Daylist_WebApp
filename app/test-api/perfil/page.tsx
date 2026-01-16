@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { perfilApi, ResumoSaude } from "@/api/perfil";
+import { perfilApi, ResumoSaude } from "@/app/api/perfil";
 
 export default function TestApiPerfil() {
   const [usuarioId, setUsuarioId] = useState("1");

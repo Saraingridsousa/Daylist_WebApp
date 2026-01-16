@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usuarioApi } from "@/api/usuario";
+import { usuarioApi } from "@/app/api/usuario";
 
 export default function TestApiUsuario() {
   const [formData, setFormData] = useState({ name: "", email: "", senha: "" });

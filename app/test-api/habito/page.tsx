@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { habitoApi } from "@/api/habito";
-import { registroHabitoApi } from "@/api/registroHabito";
-import { Habito, FrequenciaEnum, RegistroHabito } from "@/api/types";
+import { habitoApi } from "@/app/api/habito";
+import { registroHabitoApi } from "@/app/api/registroHabito";
+import { Habito, FrequenciaEnum, RegistroHabito } from "@/app/api/types";
 
 export default function TestApiHabito() {
   const [perfilId, setPerfilId] = useState("1");
