@@ -42,7 +42,7 @@ export default function SignupPage() {
   return (
     <AuthShell
       title="Criar conta"
-      imageSrc='/assets/capSignup.png'     
+      imageSrc='/assets/capSignUp.png'     
       error={error}
       footer={(
         <p className="text-center text-gray-600 text-sm">
