@@ -44,7 +44,7 @@ export default function TestApiHabito() {
   // Carregar ao iniciar
   useEffect(() => {
     buscarDadosCompletos();
-  }, []);
+  });
 
   // Helper para encontrar o progresso de um hábito específico na lista de hoje
   const obterProgresso = (habitoId: number) => {
