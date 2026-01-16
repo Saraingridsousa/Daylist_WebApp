@@ -131,7 +131,7 @@ export default function Calendar() {
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-50">
                     <div className="flex items-center gap-4">
-                        <div className="flex gap-2 text-2xl font-bold">
+                        <div className="flex gap-3 text-3xl font-bold">
                             <button onClick={() => navegar(-1)} className="hover:text-pink-500 transition">{"<"}</button>
                             <button onClick={() => navegar(1)} className="hover:text-pink-500 transition">{">"}</button>
                         </div>
@@ -276,7 +276,7 @@ export default function Calendar() {
 
                     {/* Semana */}
                     {visao === 'Semana' && construirGradeSemana().map((dia, i) => (
-                        <div key={i} className="border-r border-gray-100 last:border-r-0 p-3 flex flex-col items-center group hover:bg-pink-500/10 transition">
+                        <div key={i} className={`border-r border-gray-100 last:border-r-0 p-3 flex flex-col items-center group hover:bg-pink-500/10 transition ${dia.toDateString() === hoje.toDateString() ? 'bg-pink-500/5' : ''}`}>
                             <span className={`text-3xl font-bold mb-4 mt-2 ${dia.toDateString() === hoje.toDateString() ? 'text-pink-500' : 'text-gray-800'}`}>
                                 {dia.getDate()}
                             </span>
@@ -286,19 +286,19 @@ export default function Calendar() {
                                     <div 
                                         key={idx} 
                                         className="relative overflow-hidden rounded-xl p-[6px] text-[13px] text-black"
-                                        style={{ backgroundColor: `${dia.getDate() > hoje.getDate() ? '#bdbdbd' : habito.cor}50` }}
+                                        style={{ backgroundColor: `${dia > hoje ? '#bdbdbd' : habito.cor}50` }}
                                     >
                                         <div 
                                             className="absolute inset-y-0 left-0"
                                             style={{ 
-                                                width: `${dia.getDate() > hoje.getDate() ? '0' : (habito.progresso / habito.meta) * 100}%`, 
+                                                width: `${dia > hoje ? '0' : (habito.progresso / habito.meta) * 100}%`, 
                                                 backgroundColor: habito.cor,
                                                 zIndex: 0 
                                             }}
                                         />                                        
                                         <div className="relative z-10 flex flex-col gap-1">
                                             <span> {habito.titulo} </span>
-                                            <span> {(habito.progresso / habito.meta) >= 1 ? '✅ Concluído' : `🎯 Meta: ${habito.meta}`} </span> 
+                                            <span> {(dia <= hoje && (habito.progresso / habito.meta) >= 1) ? '✅ Concluído' : `🎯 Meta: ${habito.meta} ${habito.unidade}`} </span> 
                                         </div>
                                     </div>
                                 ))}
