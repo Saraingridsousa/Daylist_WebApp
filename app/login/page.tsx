@@ -22,7 +22,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {      
-      await usuarioApi.login({ email, senha: password });
+      const res = await usuarioApi.login({ email, senha: password });
+      const user = res.data.user;
+      const userJson = JSON.stringify(user);
+      localStorage.setItem('user', userJson);
       // Depois de logar, redirecione para a página principal
       router.push('/');
     } catch (err) {

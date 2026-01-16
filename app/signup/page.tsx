@@ -31,7 +31,10 @@ export default function SignupPage() {
 
     try {
       // await new Promise(resolve => setTimeout(resolve, 1000));
-      await usuarioApi.registrar({ name, email, senha: password });
+      const res = await usuarioApi.registrar({ name, email, senha: password });
+      const user = res.data.user;
+      const userJson = JSON.stringify(user);
+      localStorage.setItem('user', userJson);
       router.push('/dados-pessoais');
     } catch (err) {
       setError('Erro ao criar conta. Tente novamente.');

@@ -26,12 +26,18 @@ export default function PersonalDataPage() {
     setLoading(true);
 
     try {
-      // TODO: Usuario Id precisa ser salvo no login
+      const userJson = localStorage.getItem('user');
+      const user = userJson ? JSON.parse(userJson) : null;
+      if (!user || !user.id) {
+        setError('Usuário não autenticado.');
+        setLoading(false);
+        return;
+      }
       const dataNascimento = new Date();
       dataNascimento.setFullYear(dataNascimento.getFullYear() - parseInt(age, 10));
       const ageString = dataNascimento.toISOString().split('T')[0];
       await perfilApi.atualizarBiometria({
-        usuarioId: 8,
+        usuarioId: user.id,
         peso: parseFloat(weight),
         altura: parseInt(height, 10),
         dataNascimento: ageString,
