@@ -4,6 +4,8 @@ export interface ResumoSaude {
     imc: string;
     ofensivaAtual: number;
     maiorOfensiva: number;
+    dataNascimento: string;
+    sexo: string;
     pesoAtual: number;
     alturaAtual: number;
 }
