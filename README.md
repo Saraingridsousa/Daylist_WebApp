@@ -14,6 +14,10 @@ yarn install
 pnpm install
 ```
 
+Configure o .env:
+NEXT_PUBLIC_SUPABASE_URL=url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=chave
+
 Depois, execute o servidor de desenvolvimento:
 
 ```bash
