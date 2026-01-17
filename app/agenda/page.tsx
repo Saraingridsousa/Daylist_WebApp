@@ -1,12 +1,33 @@
 'use client';
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { X } from 'lucide-react';
+import { habitoService, HabitoComProgresso } from '@/lib/habito.service';
+import { perfilService } from '@/lib/perfil.service';
+import { getLocalDateString } from '@/lib/date';
+import ModalAddHabito from '@/components/modais/addHabito';
+
+// Tipo para hábitos formatados para exibição na agenda
+type HabitoAgenda = {
+    titulo: string;
+    meta: number;
+    unidade: string;
+    progresso: number;
+    cor: string;
+};
+
+// Cores para os hábitos
+const coresHabitos = ['#fae298', '#e7b6e7', '#86e5d6', '#ffb3b3', '#b3d4fc', '#c4e5b8'];
 
 export default function Calendar() {
     const [visao, setVisao] = useState<'Semana' | 'Mês' | 'Ano'>('Mês');
     const [menuVisaoAberto, setMenuVisaoAberto] = useState(false);
     const [menuMesesAberto, setMenuMesesAberto] = useState(false);
     const [dataReferencia, setDataReferencia] = useState(new Date());
+    const [habitosDoDia, setHabitosDoDia] = useState<HabitoAgenda[]>([]);
+    const [habitosPorData, setHabitosPorData] = useState<Record<string, HabitoAgenda[]>>({});
+    const [perfilId, setPerfilId] = useState<string | null>(null);
+    const [isAddHabitoOpen, setIsAddHabitoOpen] = useState(false);
 
     const mesesAno = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
     const daysOfWeek = ['DOM.', 'SEG.', 'TER.', 'QUA.', 'QUI.', 'SEX.', 'SÁB.'];
@@ -26,11 +47,124 @@ export default function Calendar() {
     const [editandoAno, setEditandoAno] = useState(false);
     const [anoInput, setAnoInput] = useState('');
 
-    const habitosDoDia = [ //Exemplo
-        { titulo: '💧 Beber Água', meta: 3, unidade: 'litros', progresso: 3, cor: '#fae298' },
-        { titulo: '📚 Estudar', meta: 3, unidade: 'horas', progresso: 2, cor: '#e7b6e7' },
-        { titulo: '🏋️ Exercício', meta: 2, unidade: 'horas', progresso: 0.5, cor:  '#86e5d6' }
-    ];
+    // Carregar perfil do usuário
+    useEffect(() => {
+        async function carregarPerfil() {
+            try {
+                const userJson = localStorage.getItem('user');
+                const user = userJson ? JSON.parse(userJson) : null;
+                if (!user?.id) return;
+
+                const pId = await perfilService.obterPerfilId(user.id);
+                setPerfilId(pId);
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+            }
+        }
+        carregarPerfil();
+    }, []);
+
+    // Carregar hábitos do dia atual
+    useEffect(() => {
+        async function carregarHabitosDoDia() {
+            if (!perfilId) return;
+            
+            try {
+                const dataStr = getLocalDateString();
+                const habitos = await habitoService.listarComProgresso(perfilId, dataStr);
+                
+                const habitosFormatados: HabitoAgenda[] = habitos.map((h, index) => ({
+                    titulo: getEmojiByCategoria(h.categoria) + ' ' + h.nome,
+                    meta: h.meta_alvo,
+                    unidade: h.unidade_medida || '',
+                    progresso: h.qtd_realizada || 0,
+                    cor: coresHabitos[index % coresHabitos.length],
+                }));
+                
+                setHabitosDoDia(habitosFormatados);
+            } catch (error) {
+                console.error('Erro ao carregar hábitos:', error);
+            }
+        }
+        carregarHabitosDoDia();
+    }, [perfilId]);
+
+    // Carregar hábitos para as datas da semana visível
+    useEffect(() => {
+        async function carregarHabitosSemana() {
+            if (!perfilId || visao !== 'Semana') return;
+            
+            try {
+                const diasSemana = construirGradeSemana();
+                const novosHabitosPorData: Record<string, HabitoAgenda[]> = {};
+                
+                for (const dia of diasSemana) {
+                    const dataStr = getLocalDateString(dia);
+                    const habitos = await habitoService.listarComProgresso(perfilId, dataStr);
+                    
+                    novosHabitosPorData[dataStr] = habitos.map((h, index) => ({
+                        titulo: getEmojiByCategoria(h.categoria) + ' ' + h.nome,
+                        meta: h.meta_alvo,
+                        unidade: h.unidade_medida || '',
+                        progresso: h.qtd_realizada || 0,
+                        cor: coresHabitos[index % coresHabitos.length],
+                    }));
+                }
+                
+                setHabitosPorData(novosHabitosPorData);
+            } catch (error) {
+                console.error('Erro ao carregar hábitos da semana:', error);
+            }
+        }
+        carregarHabitosSemana();
+    }, [perfilId, visao, dataReferencia]);
+
+    // Carregar hábitos para as datas do mês visível
+    useEffect(() => {
+        async function carregarHabitosMes() {
+            if (!perfilId || visao !== 'Mês') return;
+
+            try {
+                const diasMes = construirGradeMes();
+                const novosHabitosPorData: Record<string, HabitoAgenda[]> = {};
+
+                for (const dia of diasMes) {
+                    const dataStr = getLocalDateString(dia.dataFull);
+                    const habitos = await habitoService.listarComProgresso(perfilId, dataStr);
+
+                    novosHabitosPorData[dataStr] = habitos.map((h, index) => ({
+                        titulo: getEmojiByCategoria(h.categoria) + ' ' + h.nome,
+                        meta: h.meta_alvo,
+                        unidade: h.unidade_medida || '',
+                        progresso: h.qtd_realizada || 0,
+                        cor: coresHabitos[index % coresHabitos.length],
+                    }));
+                }
+
+                setHabitosPorData(novosHabitosPorData);
+            } catch (error) {
+                console.error('Erro ao carregar hábitos do mês:', error);
+            }
+        }
+        carregarHabitosMes();
+    }, [perfilId, visao, dataReferencia]);
+
+    // Função auxiliar para obter emoji baseado na categoria
+    function getEmojiByCategoria(categoria: string): string {
+        const emojis: Record<string, string> = {
+            'Saúde': '💪',
+            'Exercício': '🏋️',
+            'Água': '💧',
+            'Estudo': '📚',
+            'Leitura': '📖',
+            'Meditação': '🧘',
+            'Social': '👥',
+            'Pessoal': '🌟',
+            'Alimentação': '🥗',
+            'Sono': '😴',
+        };
+        return emojis[categoria] || '✨';
+    }
 
     useEffect(() => {
         function handleClickFora(event: MouseEvent) {
@@ -231,7 +365,10 @@ export default function Calendar() {
                                     ))}
                                 </div>
                             )}
-                            <button className="bg-[#ff9cb5] font-[family-name:var(--font-sriracha)] text-white px-6 py-2 rounded-full font-medium text-xl hover:bg-[#fc809f] transition shadow-sm">
+                            <button 
+                                onClick={() => setIsAddHabitoOpen(true)}
+                                className="bg-[#ff9cb5] font-[family-name:var(--font-sriracha)] text-white px-6 py-2 rounded-full font-medium text-xl hover:bg-[#fc809f] transition shadow-sm"
+                            >
                                 Criar +
                             </button>
                         </div>
@@ -252,21 +389,31 @@ export default function Calendar() {
                     {/* Mês */}
                     {visao === 'Mês' && construirGradeMes().map((item, index) => {
                         const ehHoje = item.dataFull.toDateString() === hoje.toDateString();
+                        const dataStr = item.dataFull.toISOString().split('T')[0];
+                        const habitosDia = (habitosPorData[dataStr] || []).slice(0, 3);
+
                         return (
                             <div key={index} className={`h-24 md:h-32 border-r border-b border-gray-100 p-4 transition cursor-pointer ${ehHoje ? 'bg-pink-50/50 hover:bg-pink-50/80' : 'hover:bg-pink-50/50'}`}>
                                 <span className={`flex items-center justify-center w-7 h-7 rounded-full text-sm font-medium 
                                     ${!item.atual ? 'text-gray-300' : ehHoje ? 'bg-pink-400 text-white' : 'text-gray-600'}`}>
                                     {item.dia}
                                 </span>
-                                <div className="mt-1 flex flex-col gap-1">
-                                {habitosDoDia.map((habito, idx) => (
-                                    <div 
-                                    key={idx}
-                                    className={`h-2 rounded-full`}
-                                    style={{ backgroundColor: ehHoje ? `${habito.cor}` : `${habito.cor}60`,
-                                    width: item.dataFull > hoje ? '0.5rem' : `${(habito.progresso / habito.meta) * 100}%` }}
-                                    ></div>
-                                ))}
+                                <div className="mt-2 flex flex-col gap-1">
+                                    {habitosDia.length > 0 ? (
+                                        habitosDia.map((habito, idx) => (
+                                            <div
+                                                key={idx}
+                                                className={`text-[11px] truncate rounded-full px-2 py-[1px] ${item.atual ? 'text-gray-800' : 'text-gray-300'}`}
+                                                style={{ backgroundColor: item.atual ? `${habito.cor}55` : '#f3f4f6' }}
+                                            >
+                                                {habito.titulo}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className={`text-[10px] ${item.atual ? 'text-gray-300' : 'text-gray-200'}`}>
+                                            Sem hábitos
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         );
@@ -285,38 +432,71 @@ export default function Calendar() {
                     ))}
 
                     {/* Semana */}
-                    {visao === 'Semana' && construirGradeSemana().map((dia, i) => (
-                        <div key={i} className={`border-r border-gray-100 last:border-r-0 p-3 flex flex-col items-center group hover:bg-pink-500/10 transition ${dia.toDateString() === hoje.toDateString() ? 'bg-pink-500/5' : ''}`}>
-                            <span className={`text-3xl font-bold mb-4 mt-2 ${dia.toDateString() === hoje.toDateString() ? 'text-pink-500' : 'text-gray-800'}`}>
-                                {dia.getDate()}
-                            </span>
+                    {visao === 'Semana' && construirGradeSemana().map((dia, i) => {
+                        const dataStr = getLocalDateString(dia);
+                        const habitosDia = habitosPorData[dataStr] || habitosDoDia;
+                        
+                        return (
+                            <div key={i} className={`border-r border-gray-100 last:border-r-0 p-3 flex flex-col items-center group hover:bg-pink-500/10 transition ${dia.toDateString() === hoje.toDateString() ? 'bg-pink-500/5' : ''}`}>
+                                <span className={`text-3xl font-bold mb-4 mt-2 ${dia.toDateString() === hoje.toDateString() ? 'text-pink-500' : 'text-gray-800'}`}>
+                                    {dia.getDate()}
+                                </span>
 
-                            <div className="flex flex-col gap-3 w-full">
-                                {habitosDoDia.map((habito, idx) => (
-                                    <div 
-                                        key={idx} 
-                                        className="relative overflow-hidden rounded-xl p-[6px] text-[13px] text-black"
-                                        style={{ backgroundColor: `${dia > hoje ? '#bdbdbd' : habito.cor}50` }}
-                                    >
+                                <div className="flex flex-col gap-3 w-full">
+                                    {habitosDia.length > 0 ? habitosDia.map((habito, idx) => (
                                         <div 
-                                            className="absolute inset-y-0 left-0"
-                                            style={{ 
-                                                width: `${dia > hoje ? '0' : (habito.progresso / habito.meta) * 100}%`, 
-                                                backgroundColor: habito.cor,
-                                                zIndex: 0 
-                                            }}
-                                        />                                        
-                                        <div className="relative z-10 flex flex-col gap-1">
-                                            <span> {habito.titulo} </span>
-                                            <span> {(dia <= hoje && (habito.progresso / habito.meta) >= 1) ? '✅ Concluído' : `🎯 Meta: ${habito.meta} ${habito.unidade}`} </span> 
+                                            key={idx} 
+                                            className="relative overflow-hidden rounded-xl p-[6px] text-[13px] text-black"
+                                            style={{ backgroundColor: `${dia > hoje ? '#bdbdbd' : habito.cor}50` }}
+                                        >
+                                            <div 
+                                                className="absolute inset-y-0 left-0"
+                                                style={{ 
+                                                    width: `${dia > hoje ? '0' : Math.min((habito.progresso / habito.meta) * 100, 100)}%`, 
+                                                    backgroundColor: habito.cor,
+                                                    zIndex: 0 
+                                                }}
+                                            />                                        
+                                            <div className="relative z-10 flex flex-col gap-1">
+                                                <span> {habito.titulo} </span>
+                                                <span> {(dia <= hoje && (habito.progresso / habito.meta) >= 1) ? '✅ Concluído' : `🎯 Meta: ${habito.meta} ${habito.unidade}`} </span> 
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )) : (
+                                        <div className="text-gray-400 text-sm text-center py-2">
+                                            Sem hábitos
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
+
+            {/* Modal Adicionar Hábito */}
+            {isAddHabitoOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="relative">
+                        <button
+                            type="button"
+                            aria-label="Fechar modal"
+                            className="absolute -top-3 -right-3 bg-white rounded-full p-1 shadow-md text-gray-700 hover:bg-gray-100 z-10"
+                            onClick={() => setIsAddHabitoOpen(false)}
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                        <ModalAddHabito 
+                            perfilId={perfilId} 
+                            onSuccess={() => {
+                                setIsAddHabitoOpen(false);
+                                // Recarregar hábitos
+                                window.location.reload();
+                            }} 
+                        />
+                    </div>
+                </div>
+            )}
         </main>
     );
 }

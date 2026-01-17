@@ -1,20 +1,29 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
-import { usuarioApi } from '../api/usuario';
+import { authService } from '@/lib/auth.service';
 import AuthShell from '../../components/auth/AuthShell';
 
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Verificar se há erro na URL
+  useEffect(() => {
+    const urlError = searchParams.get('error');
+    if (urlError) {
+      setError(urlError);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,14 +31,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {      
-      const res = await usuarioApi.login({ email, senha: password });
-      const user = res.data.user;
+      const { user } = await authService.login({ email, senha: password });
       const userJson = JSON.stringify(user);
       localStorage.setItem('user', userJson);
       // Depois de logar, redirecione para a página principal
-      router.push('/');
-    } catch (err) {
-      setError('Erro ao fazer login. Tente novamente.');
+      router.push('/listaDeHabitos');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao fazer login. Tente novamente.';
+      setError(errorMessage);
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -110,5 +119,13 @@ export default function LoginPage() {
         </div>
       </form>
     </AuthShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Carregando...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

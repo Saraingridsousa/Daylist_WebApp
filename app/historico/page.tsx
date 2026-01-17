@@ -1,35 +1,78 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { M_PLUS_Rounded_1c } from "next/font/google";
-import { HistoricoNavbar } from "@/components/HistoricoNavbar";
 import { HistoricoFilters } from "@/components/HistoricoFilters";
 import { HistoricoProgressCard } from "@/components/HistoricoProgressCard";
 import { HistoricoHabitsList } from "@/components/HistoricoHabitsList";
+import { habitoService, HabitoComProgresso } from "@/lib/habito.service";
+import { perfilService } from "@/lib/perfil.service";
+import { getLocalDateString } from "@/lib/date";
 
 const roundedTitle = M_PLUS_Rounded_1c({ subsets: ["latin"], weight: "700" });
 
 type Habito = {
-  id: number;
+  id: string;
   nome: string;
   emoji: string;
   completado: boolean;
+  progresso: number;
 };
-
-// Dados mockados para demonstração
-const mockHabitos: Habito[] = [
-  { id: 1, nome: "Beber 2 litros de água", emoji: "💧", completado: true },
-  { id: 2, nome: "Fazer exercício", emoji: "🏋️", completado: false },
-  { id: 3, nome: "Estudar", emoji: "📚", completado: true },
-];
 
 export default function HistoricoPage() {
   const [habitoSelecionado, setHabitoSelecionado] = useState("Todos");
-  const [dataSelecionada, setDataSelecionada] = useState("2025-12-04");
+  const [dataSelecionada, setDataSelecionada] = useState(getLocalDateString());
+  const [habitos, setHabitos] = useState<Habito[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Calcular porcentagem de hábitos completados
-  const habitosCompletados = mockHabitos.filter((h) => h.completado).length;
-  const porcentagem = Math.round((habitosCompletados / mockHabitos.length) * 100);
+  useEffect(() => {
+    async function fetchHabitos() {
+      try {
+        const userJson = localStorage.getItem("user");
+        const user = userJson ? JSON.parse(userJson) : null;
+        if (!user?.id) return;
+
+        const perfilId = await perfilService.obterPerfilId(user.id);
+        const habitosData = await habitoService.listarComProgresso(perfilId, dataSelecionada);
+        
+        // Mapear para o formato esperado pelo componente
+        const habitosFormatados: Habito[] = habitosData.map((h: HabitoComProgresso) => ({
+          id: h.id,
+          nome: h.nome,
+          emoji: getEmojiByCategoria(h.categoria),
+          completado: h.progresso === 100,
+          progresso: h.progresso || 0,
+        }));
+        
+        setHabitos(habitosFormatados);
+      } catch (error) {
+        console.error("Erro ao carregar hábitos:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHabitos();
+  }, [dataSelecionada]);
+
+  // Função auxiliar para obter emoji baseado na categoria
+  function getEmojiByCategoria(categoria: string): string {
+    const emojis: Record<string, string> = {
+      'Saúde': '💪',
+      'Exercício': '🏋️',
+      'Água': '💧',
+      'Estudo': '📚',
+      'Leitura': '📖',
+      'Meditação': '🧘',
+      'Social': '👥',
+      'Pessoal': '🌟',
+    };
+    return emojis[categoria] || '✨';
+  }
+
+  // Calcular porcentagem média de progresso dos hábitos
+  const porcentagem = habitos.length > 0
+    ? Math.round(habitos.reduce((acc, h) => acc + (h.progresso || 0), 0) / habitos.length)
+    : 0;
 
   // Formatar data para exibição
   const formatarData = (data: string) => {
@@ -43,10 +86,8 @@ export default function HistoricoPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#FFF9C4] flex justify-center pt-0 pb-10 px-0 md:px-0">
+    <main className="min-h-screen bg-[#FFF9C4] flex justify-center pt-6 pb-10 px-0 md:px-0">
       <div className="w-full">
-        <HistoricoNavbar />
-
         <div className="w-full max-w-4xl mx-auto flex flex-col items-center mt-6 px-4 md:px-8">
           {/* Título */}
           <h1
@@ -56,7 +97,7 @@ export default function HistoricoPage() {
           </h1>
 
           <HistoricoFilters
-            habitos={mockHabitos}
+            habitos={habitos}
             habitoSelecionado={habitoSelecionado}
             onHabitoChange={setHabitoSelecionado}
             dataSelecionada={dataSelecionada}
@@ -68,10 +109,14 @@ export default function HistoricoPage() {
             porcentagem={porcentagem}
           />
 
-          <HistoricoHabitsList
-            habitos={mockHabitos}
-            dataFormatada={formatarData(dataSelecionada)}
-          />
+          {loading ? (
+            <div className="text-gray-600">Carregando...</div>
+          ) : (
+            <HistoricoHabitsList
+              habitos={habitos}
+              dataFormatada={formatarData(dataSelecionada)}
+            />
+          )}
         </div>
       </div>
     </main>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Josefin_Sans } from "next/font/google";
 import "./globals.css";
 import { Sriracha } from 'next/font/google';
+import Navbar from '@/components/Navbar';
 
 const josefinSans = Josefin_Sans({ subsets: ["latin"] });
 const sriracha = Sriracha({ 
@@ -21,7 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" className={sriracha.variable}>
-        <body className={josefinSans.className}>{children}</body>
+        <body className={josefinSans.className}>
+          <Navbar />
+          {children}
+        </body>
     </html>
   );
 }

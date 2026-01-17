@@ -2,7 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { perfilApi } from '../api/perfil';
+import { perfilService } from '@/lib/perfil.service';
 import AuthShell from '../../components/auth/AuthShell';
 
 export default function PersonalDataPage() {
@@ -36,16 +36,23 @@ export default function PersonalDataPage() {
       const dataNascimento = new Date();
       dataNascimento.setFullYear(dataNascimento.getFullYear() - parseInt(age, 10));
       const ageString = dataNascimento.toISOString().split('T')[0];
-      await perfilApi.atualizarBiometria({
+      
+      let sexo = 'N';
+      if (gender === 'masculino') sexo = 'M';
+      else if (gender === 'feminino') sexo = 'F';
+      else if (gender === 'prefiro não dizer') sexo = 'N';
+      
+      await perfilService.atualizarBiometria({
         usuarioId: user.id,
         peso: parseFloat(weight),
         altura: parseInt(height, 10),
         dataNascimento: ageString,
-        sexo: gender === "masculino" ? "M" : "F",
+        sexo,
       });
-      router.push('/');
-    } catch (err) {
-      setError('Erro ao salvar dados. Tente novamente.');
+      router.push('/perfil');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao salvar dados. Tente novamente.';
+      setError(errorMessage);
       console.error('Save error:', err);
     } finally {
       setLoading(false);

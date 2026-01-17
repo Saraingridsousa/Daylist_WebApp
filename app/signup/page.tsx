@@ -3,8 +3,8 @@
 import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import { usuarioApi } from '../api/usuario';
+import { Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { authService } from '@/lib/auth.service';
 import AuthShell from '../../components/auth/AuthShell';
 
 export default function SignupPage() {
@@ -17,10 +17,17 @@ export default function SignupPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setSuccess(false);
+
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('As senhas não coincidem.');
@@ -30,19 +37,55 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-      const res = await usuarioApi.registrar({ name, email, senha: password });
-      const user = res.data.user;
+      const { user, needsEmailConfirmation } = await authService.registrar({ name, email, senha: password });
       const userJson = JSON.stringify(user);
       localStorage.setItem('user', userJson);
-      router.push('/dados-pessoais');
-    } catch (err) {
-      setError('Erro ao criar conta. Tente novamente.');
+      
+      if (needsEmailConfirmation) {
+        // Mostrar mensagem de sucesso e pedir para verificar email
+        setSuccess(true);
+      } else {
+        // Redirecionar diretamente para dados-pessoais
+        router.push('/dados-pessoais');
+      }
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erro ao criar conta. Tente novamente.';
+      setError(errorMessage);
       console.error('Signup error:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  // Tela de sucesso quando precisa confirmar email
+  if (success) {
+    return (
+      <AuthShell
+        title="Verifique seu email"
+        imageSrc='/assets/capSignUp.png'
+        classname="max-w-xl w-full"
+      >
+        <div className="text-center space-y-4">
+          <CheckCircle className="w-16 h-16 mx-auto text-green-500" />
+          <p className="text-gray-700">
+            Enviamos um link de confirmação para:
+          </p>
+          <p className="font-semibold text-[#AB2F50]">{email}</p>
+          <p className="text-sm text-gray-600">
+            Clique no link enviado para ativar sua conta e continuar o cadastro.
+          </p>
+          <div className="pt-4">
+            <Link 
+              href="/login" 
+              className="text-[#AB2F50] hover:underline font-medium"
+            >
+              Voltar para o login
+            </Link>
+          </div>
+        </div>
+      </AuthShell>
+    );
+  }
 
   return (
     <AuthShell

@@ -5,7 +5,7 @@ import { perfilApi, ResumoSaude } from "@/app/api/perfil";
 
 export default function TestApiPerfil() {
   const [usuarioId, setUsuarioId] = useState("1");
-  const [biometria, setBiometria] = useState({ peso: 0, altura: 0 });
+  const [biometria, setBiometria] = useState({ peso: 0, altura: 0, dataNascimento: '', sexo: 'M' });
   const [resumo, setResumo] = useState<ResumoSaude | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -28,6 +28,8 @@ export default function TestApiPerfil() {
         usuarioId: parseInt(usuarioId),
         peso: biometria.peso,
         altura: biometria.altura,
+        dataNascimento: biometria.dataNascimento || new Date().toISOString().split('T')[0],
+        sexo: biometria.sexo || 'M',
       });
       alert("Biometria atualizada!");
       carregarPerfil(); // Recarrega para ver o novo IMC

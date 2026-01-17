@@ -1,5 +1,5 @@
 type Habito = {
-  id: number;
+  id: string;
   nome: string;
   emoji: string;
   completado: boolean;
